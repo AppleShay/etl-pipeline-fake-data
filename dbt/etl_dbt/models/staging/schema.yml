@@ -4,7 +4,7 @@ models:
   - name: stg_fake_users
     description: "Cleaned user data from raw.fake_users"
     columns:
-      - name: id
+      - name: email
         tests:
           - not_null
           - unique
