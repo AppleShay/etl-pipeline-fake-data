@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_fake_users
+    description: "Cleaned user data from raw.fake_users"
+    columns:
+      - name: id
+        tests:
+          - not_null
+          - unique
