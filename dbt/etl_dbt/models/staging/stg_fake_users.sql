@@ -5,7 +5,6 @@ with source as (
 )
 
 select
-    id,
     lower(name) as name,
     lower(email) as email,
     initcap(city) as city
