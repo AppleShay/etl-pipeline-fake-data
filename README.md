@@ -4,38 +4,73 @@ A modern, lightweight ETL pipeline that extracts data from a public API, loads i
 
 ## 🛠 Stack
 
-- **Python** — extraction and loading
-- **PostgreSQL (Docker)** — data warehouse
-- **dbt** — transformations and testing
-- **GitHub** — version control
+- Python 3.10
+- PostgreSQL
+- pandas, SQLAlchemy, Faker
+- dbt for modeling and testin
+- GitHub Actions for CI/CD
 
 ## 📁 Project Structure
 
-    etl_pipeline_project/
-    ├── etl/ # Python ETL scripts
-    ├── dbt/etl_dbt/ # dbt project
-    ├── orchestration/ # (future: Prefect flows)
-    ├── ci_cd/ # (future: GitHub Actions)
+    .
+    ├── etl/ # Python scripts for extraction and loading
+    │ └── extract_and_load.py
+    ├── dbt/
+    │ └── etl_dbt/ # dbt project for transformations & testing
+    │ ├── models/
+    │ │ └── staging/
+    │ │ ├── stg_fake_users.sql
+    │ │ └── schema.yml
+    │ ├── dbt_project.yml
+    │ └── profiles.yml # Injected during CI
     ├── requirements.txt
-    └── README.md
+    └── .github/workflows/
+    └── ci.yml # GitHub Actions workflow file
 
+## 🔁 Pipeline Overview
 
-## 🚀 How to Run
+### 1. **Extract & Load (Python)**
+- Uses [`Faker`](https://faker.readthedocs.io/en/master/) to generate fake user data.
+- Loads data into a PostgreSQL database (`raw.fake_users`).
 
-1. Clone repo and create virtual environment
-2. Install dependencies:
-```pip install -r requirements.txt```
-3. Start PostgreSQL:
-```docker run --name etl-postgres -e POSTGRES_PASSWORD=etlpass -p 5433:5432 -d postgres```
-4. Run the pipeline:
-```python etl/extract_and_load.py```
-5. Transform and test with dbt:
-```
+### 2. **Transform (dbt)**
+- Creates a staging model: `raw.stg_fake_users`.
+- Applies business logic, formatting, or renaming as needed.
+
+### 3. **Test (dbt tests)**
+- Ensures data quality using dbt's built-in tests:
+  - `not_null`
+  - `unique`
+
+### 4. **CI/CD (GitHub Actions)**
+- Runs on every `push` and `pull_request` to `main`.
+- Automates:
+  - Database spin-up
+  - Python ETL job
+  - dbt transformations and tests
+  - Upload of logs as artifacts
+
+---
+
+## 🚀 Run It Locally
+
+```bash
+# Start Postgres (Docker recommended)
+docker run --name etl-postgres -e POSTGRES_PASSWORD=etlpass -p 5433:5432 -d postgres
+
+# Install dependencies
+pip install -r requirements.txt
+pip install dbt-postgres
+
+# Run Python ETL
+python etl/extract_and_load.py
+
+# Run dbt
 cd dbt/etl_dbt
+dbt deps
 dbt run
 dbt test
 ```
-
 ---
 
 ## ✅ Features
@@ -49,6 +84,7 @@ dbt test
 
 ## 📌 Author
 
-**Shaheryar**  
+Built with ❤️ by **Shaheryar (AppleShay)**
+
 _MSc Data Science & Engineering, Uppsala University_
 
