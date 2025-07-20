@@ -24,11 +24,14 @@ def extract():
 # --- LOAD ---
 def load(df):
     engine = create_engine(DB_URI)
-    with engine.connect() as conn:
-        conn.execute(text("CREATE SCHEMA IF NOT EXISTS raw"))  # ✅ Add this line
+
+    # ✅ Open a BEGIN block and commit schema creation explicitly
+    with engine.begin() as conn:
+        conn.execute(text("CREATE SCHEMA IF NOT EXISTS raw"))
+
+    # ✅ Now the schema exists — this will work
     df.to_sql("fake_users", engine, schema="raw", if_exists="append", index=False)
     print("✅ Data loaded into raw.fake_users")
-
 
 if __name__ == "__main__":
     df = extract()
