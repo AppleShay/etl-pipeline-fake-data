@@ -40,11 +40,26 @@ jobs:
           pip install dbt-postgres
 
       - name: Wait for Postgres
-        run: |
-          sleep 10  # give the container a moment to fully initialize
+        run: sleep 10
 
       - name: Run Python ETL
         run: python etl/extract_and_load.py
+
+      - name: Set up dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "etl_dbt:" > ~/.dbt/profiles.yml
+          echo "  target: dev" >> ~/.dbt/profiles.yml
+          echo "  outputs:" >> ~/.dbt/profiles.yml
+          echo "    dev:" >> ~/.dbt/profiles.yml
+          echo "      type: postgres" >> ~/.dbt/profiles.yml
+          echo "      host: localhost" >> ~/.dbt/profiles.yml
+          echo "      user: postgres" >> ~/.dbt/profiles.yml
+          echo "      password: etlpass" >> ~/.dbt/profiles.yml
+          echo "      port: 5433" >> ~/.dbt/profiles.yml
+          echo "      dbname: etl_db" >> ~/.dbt/profiles.yml
+          echo "      schema: raw" >> ~/.dbt/profiles.yml
+          echo "      threads: 1" >> ~/.dbt/profiles.yml
 
       - name: Run dbt
         working-directory: ./dbt/etl_dbt
